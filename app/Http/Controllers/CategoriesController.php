@@ -19,6 +19,8 @@ class CategoriesController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
      */
     public function create()
     {
@@ -27,10 +29,15 @@ class CategoriesController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $request->validate([
+
+
+        $this->validate($request, [
             'name' => 'required|unique:categories|max:255',
             'color' => 'required|max:7',
         ]);
@@ -40,37 +47,64 @@ class CategoriesController extends Controller
         $category->color = $request->color;
         $category->save();
 
-        return redirect()->route('categories.index')->with('success', 'Nueva categoria agregada correctamente');
+        return redirect()->route('categories.index')->with('success', 'Category has been added');
     }
 
     /**
      * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function show(string $id)
+    public function show($id)
     {
+        $category = Category::find($id);
+        return view('categories.show', ['category' => $category]);
     }
 
     /**
      * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function edit(string $id)
+    public function edit($id)
     {
         //
     }
 
     /**
      * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $category)
     {
-        //
+        $category = Category::find($category);
+
+        $category->name = $request->name;
+        $category->color = $request->color;
+        $category->save();
+
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully');
     }
 
     /**
      * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
      */
-    public function destroy(string $id)
+    public function destroy($category)
     {
         //
+        $category = Category::find($category);
+        $category->todos()->each(function ($todo) {
+            $todo->delete(); // <-- direct deletion
+        });
+        $category->delete();
+        return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
     }
 }

@@ -1,41 +1,76 @@
 @extends('app')
 
 @section('content')
-    <div class="container w-25 border p-4 mt-5">
-        <form action="{{ route('todos') }}" method="POST">
+
+<div class="container w-25 border p-4 mt-5">
+    <div class="row mx-auto">
+        <form  method="POST" action="{{route('categories.store')}}">
             @csrf
 
-            @if (session('success'))
-                <h6 class="alert alert-success">{{ session('success') }}</h6>
-            @endif
+            <div class="mb-3 col">
 
-            @error('title')
-                <h6 class="alert alert-danger">{{ $message }}</h6>
+            @error('name')
+                <div class="alert alert-danger">{{ $message }}</div>
             @enderror
 
-            <div class="my-3">
-                <label for="title" class="form-label">Tíutlo de la tarea</label>
-                <input type="text" name="title" class="form-control" id="title">
+            @error('color')
+                <div class="alert alert-danger">{{ $message }}</div>
+            @enderror
+
+            @if (session('success'))
+                    <h6 class="alert alert-success">{{ session('success') }}</h6>
+            @endif
+
+                <label for="exampleFormControlInput1" class="form-label">Nombre de la categoría</label>
+                <input type="text" class="form-control mb-2" name="name" id="exampleFormControlInput1" placeholder="Hogar">
+                
+                <label for="exampleColorInput" class="form-label">Escoge un color para la categoría</label>
+                <input type="color" class="form-control form-control-color" name="color" id="exampleColorInput" value="#563d7c" title="Choose your color">
+
+                <input type="submit" value="Crear tarea" class="btn btn-primary my-2" />
             </div>
-            <button type="submit" class="btn btn-primary">Crear Tarea</button>
         </form>
+    </div>
 
-        <div>
-            @foreach ($todos as $todo)
-                <div class="row py-1">
-                    <div class="col-md-9 d-flex align-items-center">
-                        <a href="{{ route('todos-show', ['id' => $todo->id]) }}">{{ $todo->title }}</a>
-                    </div>
-
-                    <div class="col-md-3 d-flex justify-content-end">
-                        <form action="{{ route('todos-destroy', [$todo->id]) }}" method="POST">
-                            @method('DELETE')
-                            @csrf
-                            <button class="btn btn-danger btn-sm">Eliminar</button>
-                        </form>
-                    </div>
+    <div >
+        @foreach ($categories as $category)
+            <div class="row py-1">
+                <div class="col-md-9 d-flex align-items-center">
+                    <a class="d-flex align-items-center gap-2" href="{{ route('categories.show', ['category' => $category->id]) }}">
+                        <span class="color-container" style="background-color: {{ $category->color }}"></span> {{ $category->name }}
+                    </a>
                 </div>
-            @endforeach
+
+                <div class="col-md-3 d-flex justify-content-end">
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-{{$category->id}}">Eliminar</button>
+                    
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
+<!-- MODAL -->
+<div class="modal fade" id="modal-{{$category->id}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Eliminar categoría</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Al eliminar la categoría <strong>{{ $category->name }}</strong> se eliminan todas las tareas asignadas a la misma. 
+            ¿Está seguro que desea eliminar la categoría <strong>{{ $category->name }}</strong>?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, cancelar</button>
+            <form action="{{ route('categories.destroy', ['category' => $category->id]) }}" method="POST">
+                @method('DELETE')
+                @csrf
+                <button type="submit" class="btn btn-primary">Sí, eliminar categoía</button>
+            </form>
+            
+        </div>
         </div>
     </div>
+</div>
 @endsection

@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [TodosController::class, 'index'])->name('todos');
-Route::post('/', [TodosController::class, 'store'])->name('todos');;
-Route::get('/{id}', [TodosController::class, 'show'])->name('todos-show');;
-Route::patch('/{id}', [TodosController::class, 'update'])->name('todos-update');
-Route::delete('/{id}', [TodosController::class, 'destroy'])->name('todos-destroy');;
+Route::post('/todos', [TodosController::class, 'store'])->name('todos');;
+Route::get('/todos/{id}', [TodosController::class, 'show'])->name('todos-show');;
+Route::patch('/todos/{id}', [TodosController::class, 'update'])->name('todos-update');
+Route::delete('/todos/{id}', [TodosController::class, 'destroy'])->name('todos-destroy');;
 
 // Categorias
 Route::resource('categories', CategoriesController::class);
